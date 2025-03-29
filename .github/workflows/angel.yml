@@ -1,4 +1,4 @@
-name: Daily Node.js Run
+name: angel daily scrape
 
 on:
   schedule:
