@@ -5,7 +5,7 @@ const axios = require('axios');
 const CONFIG = {
   groqApiKey: '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',
   maxClicks: 7,
-  apiDelay: 60000,
+  apiDelay: 30000,
   nsePattern: /^NSE:[A-Z0-9]{2,10}$/i,
   wpApiUrl: 'https://profitbooking.in/wp-json/scraper/v1/angelone_news'
 };
