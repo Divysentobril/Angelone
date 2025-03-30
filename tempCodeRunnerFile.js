@@ -159,24 +159,38 @@ async function scrapeConclusion(browser, url) {
     console.log(`Scraping conclusion from URL: ${url}`);
     const page = await browser.newPage();
     try {
-      await page.goto(url, { waitUntil: 'domcontentloaded' });
-      
-      // Wait for conclusion section
-      await page.waitForSelector('#conclusion-5', { timeout: 5000 });
-      
-      const conclusion = await page.$eval(
-        '#conclusion-5 + p',
-        el => el.innerText.trim()
-      );
-      console.log('Conclusion scraped successfully.');
-      return conclusion;
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 });
+
+        // Find dynamic conclusion ID using CSS attribute selector
+        const conclusionSelector = '[id^="conclusion-"]';
+        await page.waitForSelector(conclusionSelector, { timeout: 5000 });
+
+        // Get the actual conclusion ID
+        const conclusionId = await page.$eval(conclusionSelector, el => el.id);
+        const paragraphSelector = `#${conclusionId} + p`;
+
+        const conclusion = await page.$eval(paragraphSelector, 
+            el => el.innerText.trim()
+        );
+
+        console.log('Conclusion scraped successfully.');
+        return conclusion;
     } catch (error) {
-      console.error('Error scraping conclusion:', error.message);
-      return 'Conclusion not available';
+        console.error('Error scraping conclusion:', error.message);
+        // Fallback method if conclusion section not found
+        try {
+            return await page.$eval('.article-content p:last-of-type', 
+                el => el.innerText.trim()
+            );
+        } catch (fallbackError) {
+            console.error('Fallback scraping failed:', fallbackError.message);
+            return 'Conclusion not available';
+        }
     } finally {
-      await page.close();
+        await page.close();
     }
-  }
+}
+
 
 async function storeInWordPress(data) {
   try {
