@@ -12,8 +12,14 @@ const CONFIG = {
 
 async function scrapeAngelNews() {
   console.log('Launching browser...');
-  const browser = await puppeteer.launch({ headless: 'new' });
-  const page = await browser.newPage();
+ const browser = await puppeteer.launch({ 
+    headless: 'new',
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage'
+    ]
+  });  const page = await browser.newPage();
   
   console.log('Navigating to Angel One news page...');
   await page.goto('https://www.angelone.in/news', { waitUntil: 'networkidle2' });
